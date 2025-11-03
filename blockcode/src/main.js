@@ -1,5 +1,22 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { computed, createApp, ref } from 'vue'
+import '@/style.css'
+import App from '@/App.vue'
 
-createApp(App).mount('#app')
+import router from '@/routes.js'
+
+import { create, NButton, NSpace, NInput, NIcon, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NLayoutSider, NCard, NForm, NFormItem, NDatePicker, NSelect, NDataTable } from 'naive-ui'
+const naive = create({ components: [NButton, NSpace, NInput, NIcon, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NLayoutSider, NCard, NForm, NFormItem, NDatePicker, NSelect, NDataTable] })
+
+// Supabase 后端
+import { createClient } from '@supabase/supabase-js'
+export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_KEY)
+
+// 全局加载状态
+export const loading = ref({
+  status: computed(() => {
+    return loading.value.missionCount !== 0
+  }),
+  missionCount: 0
+})
+
+createApp(App).use(router).use(naive).mount('#app')
