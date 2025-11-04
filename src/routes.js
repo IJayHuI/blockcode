@@ -11,7 +11,10 @@ const router = createRouter({
       redirect: '/home',
       children: [
         { path: '/home', component: () => import('@/views/mains/BcHome.vue') },
-        { path: '/file', component: () => import('@/views/mains/BcFile.vue') }
+        { path: '/file', component: () => import('@/views/mains/BcFile.vue') },
+        { path: '/class', component: () => import('@/views/mains/BcClass.vue') },
+        { path: '/classes', component: () => import('@/views/mains/BcClasses.vue') },
+        { path: '/profile', component: () => import('@/views/mains/BcProfile.vue') }
       ]
     },
     { path: '/login', component: () => import('@/views/BcLogin.vue') }
