@@ -19,4 +19,7 @@ export const loading = ref({
   missionCount: 0
 })
 
+// 环境
+export const isDev = import.meta.env.DEV
+
 createApp(App).use(router).use(naive).mount('#app')
