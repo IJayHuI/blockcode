@@ -24,7 +24,7 @@
   </n-layout-header>
   <n-menu class="flex-1" :options="fullMenuOptions" />
   <n-layout-footer class="p-2 flex flex-col gap-2">
-    <n-button @click="handleSignout" secondary type="error">退出登录</n-button>
+    <n-button size="large" @click="handleSignout" secondary type="error">退出登录</n-button>
     <div><bc-beian /></div>
   </n-layout-footer>
 </template>
