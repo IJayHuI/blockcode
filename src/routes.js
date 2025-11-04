@@ -20,10 +20,10 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const {
-    data: { user }
-  } = await supabase.auth.getUser()
+    data: { session }
+  } = await supabase.auth.getSession()
   // 如果未登录且目标路由不是登录页，则重定向到登录页
-  if (to.path !== '/login' && !user) return '/login'
+  if (to.path !== '/login' && !session?.user) return '/login'
 })
 
 export default router
