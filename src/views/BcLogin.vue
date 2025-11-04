@@ -42,7 +42,7 @@
     <n-layout-sider width="30%" content-class="flex flex-col items-center">
       <div class="w-9/10 flex-1 flex flex-col justify-center gap-6">
         <p class="text-3xl font-bold">登录</p>
-        <n-form label-placement="left">
+        <n-form label-placement="left" size="large">
           <n-form-item label="账号" path="loginForm.phoneNumber">
             <n-input v-model:value="loginForm.phoneNumber" type="text" placeholder="请输入账号" />
           </n-form-item>
