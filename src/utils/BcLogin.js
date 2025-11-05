@@ -1,5 +1,6 @@
 import { supabase } from '@/main'
 import { loginForm } from '@/storages/BcLogin'
+import { home } from '@/storages/BcMain'
 import supabaseErrorMap from '@/utils/BcSupabaseErrorMap'
 
 export const login = async () => {
@@ -12,12 +13,13 @@ export const login = async () => {
 }
 
 export const getProfile = async () => {
+  const { data, error } = await supabase.from('profiles').select('*, class:classes(*)').maybeSingle()
   const {
-    data: { user },
-    error: userError
-  } = await supabase.auth.getUser()
-  if (userError) throw userError
-  const { data, error } = await supabase.from('profiles').select('*, class:classes(*)').eq('id', user.id).maybeSingle()
+    data: {
+      session: { user }
+    }
+  } = await supabase.auth.getSession()
+  data.user = user
   if (error) throw supabaseErrorMap[error.message] || error.message
-  return data
+  home.value.profile = data
 }

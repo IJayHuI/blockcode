@@ -13,7 +13,7 @@
     loading.value.missionCount++
     try {
       await login()
-      console.log(await getProfile())
+      await getProfile()
       router.push('/home')
     } catch (error) {
       notification.error({
