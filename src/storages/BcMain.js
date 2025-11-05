@@ -36,10 +36,11 @@ export const fileListTable = ref({
 })
 
 export const home = ref({
-  welcomeMessage: computed(() => {
-    const nickName = home.value.profile.nick_name
-    const username = home.value.profile.user?.email
-    return `你好，${nickName === null ? username : nickName || '用户'}`
-  }),
-  profile: {}
+  welcomeMessage: '你好，用户'
 })
+
+export const theme = {
+  common: {
+    borderRadius: '8px'
+  }
+}
