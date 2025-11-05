@@ -24,3 +24,22 @@ export const fullMenuOptions = ref([
     key: 'profile'
   }
 ])
+
+// 文件列表列
+export const fileListTable = ref({
+  columns: [
+    {
+      title: '作品名'
+    }
+  ],
+  datas: []
+})
+
+export const home = ref({
+  welcomeMessage: computed(() => {
+    const nickName = home.value.profile.nick_name
+    const username = home.value.profile.user?.email
+    return `你好，${nickName === null ? username : nickName || '用户'}`
+  }),
+  profile: {}
+})
