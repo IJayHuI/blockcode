@@ -1,6 +1,5 @@
 import { supabase } from '@/main'
 import { loginForm } from '@/storages/BcLogin'
-import { home } from '@/storages/BcMain'
 import supabaseErrorMap from '@/utils/BcSupabaseErrorMap'
 
 export const login = async () => {
@@ -21,5 +20,5 @@ export const getProfile = async () => {
   } = await supabase.auth.getSession()
   data.user = user
   if (error) throw supabaseErrorMap[error.message] || error.message
-  home.value.profile = data
+  localStorage.setItem('sb-profile', JSON.stringify(data))
 }
