@@ -12,7 +12,7 @@ export const login = async () => {
 }
 
 export const getProfile = async () => {
-  const { data, error } = await supabase.from('profiles').select('*, class:classes(*)').maybeSingle()
+  const { data, error } = await supabase.from('profiles').select(`*,class_members(classes(*))`).maybeSingle()
   const {
     data: {
       session: { user }
