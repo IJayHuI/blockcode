@@ -1,9 +1,9 @@
 <script setup>
   import { AddRound, UploadFileRound } from '@vicons/material'
-  import { isDev, supabase } from '@/main'
+  import { supabase } from '@/main'
   import { ref, onMounted } from 'vue'
   import { NUpload, NSplit, NUploadDragger, useNotification } from 'naive-ui'
-  import { fileUpload } from '@/utils/BcMain'
+  import { fileUpload, openInScratch } from '@/utils/BcMain'
 
   const notification = useNotification()
   const token = ref(null)
@@ -17,13 +17,14 @@
   })
   const handleUpload = async (file) => {
     try {
-      const result = await fileUpload(file)
+      await fileUpload(file)
+      file.onFinish()
       notification.success({
         title: '上传成功',
-        content: String(result),
         duration: 3000
       })
     } catch (error) {
+      file.onError()
       notification.error({
         title: '上传失败',
         content: String(error),
@@ -31,11 +32,15 @@
       })
     }
   }
+  const handleCreateNew = async () => {
+    const result = await fileUpload({}, 'new')
+    await openInScratch(result)
+  }
 </script>
 <template>
   <n-split class="!h-max" pane1-class="pt-0 pr-2 pb-0" pane2-class="pt-0 pb-0 pl-2" direction="horizontal" :max="0.7" :min="0.3" :default-size="0.7">
     <template #1>
-      <n-button size="large" dashed class="!w-full !h-full" tag="a" :href="`${isDev ? 'http://localhost:8601' : 'https://scratch.blockcode.com.cn'}/?token=${token}&refresh-token=${refreshToken}`">
+      <n-button size="large" dashed class="!w-full !h-full" tag="a" @click="handleCreateNew">
         <template #icon>
           <n-icon size="35"><AddRound /></n-icon>
         </template>

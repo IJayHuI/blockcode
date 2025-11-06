@@ -1,26 +1,67 @@
-import { supabase, isDev } from '@/main'
+import { supabase, isDev, loading } from '@/main'
 import { v4 as uuidv4 } from 'uuid'
 import { fileListTable, home } from '@/storages/BcMain'
 
 export const signout = async () => {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
+  fileListTable.value = {
+    datas: [],
+    loadingStatus: true,
+    needGetData: true
+  }
 }
 
-export const fileUpload = async (file) => {
+export const fileUpload = async (file, type = 'upload') => {
   const bucket = 'files'
   const {
     data: {
       session: { user }
     }
   } = await supabase.auth.getSession()
-  if (file.file.name.endsWith('.sb3')) {
-    const filePath = `${user.id}/${uuidv4()}.sb3`
+  const uuid = uuidv4()
+  const filePath = `${user.id}/${uuid}.sb3`
+  const thumbnailPath = `${user.id}/${uuid}.png`
+  if (type === 'new') {
+    // 打开加载状态
+    loading.value.missionCount++
+    const fileName = '新作品'
+    // 上传sb3
+    let response = await fetch('/DefaultProject.sb3')
+    const blob = await response.blob()
+    const fileObj = new File([blob], 'DefaultProject.sb3', { type: blob.type })
+    const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, fileObj)
+    if (uploadError) throw `新建失败: ${fileName}, ${uploadError}`
+    // 上传缩略图
+    response = await fetch('/DefaultThumbnail.png')
+    const thumbnailBlob = await response.blob()
+    const thumbnailFileObj = new File([thumbnailBlob], 'DefaultThumbnail.png', { type: thumbnailBlob.type })
+    const { error: thumbnailUploadError } = await supabase.storage.from(bucket).upload(thumbnailPath, thumbnailFileObj)
+    if (thumbnailUploadError) throw `新建失败: ${fileName}, ${thumbnailUploadError}`
+    // 上传记录
+    const { data: insertData, error: insertError } = await supabase
+      .from('files')
+      .insert({
+        user_id: user.id, // ⚠️ 必须是 auth 用户 id
+        file_name: fileName,
+        file_path: filePath,
+        thumbnail_path: thumbnailPath
+      })
+      .select()
+    if (insertError) {
+      file.onError()
+      throw `数据库插入失败: ${fileName}, ${insertError}`
+    }
+    const { data } = await supabase.storage.from('files').createSignedUrl(insertData[0].thumbnail_path, 60 * 60)
+    insertData[0].thumbnail = data?.signedUrl ?? null
+    fileListTable.value.datas.push(insertData[0])
+    return insertData[0]
+  }
+  if (file.file.name.endsWith('.sb3') && type === 'upload') {
     const fileName = file.file.name.substring(0, file.file.name.lastIndexOf('.'))
     const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file.file.file)
     if (uploadError) {
-      file.onError()
-      throw `上传失败: ${file.file.name}, ${uploadError}`
+      throw `上传失败: ${fileName}, ${uploadError}`
     }
     const { data: insertData, error: insertError } = await supabase
       .from('files')
@@ -30,13 +71,9 @@ export const fileUpload = async (file) => {
         file_path: filePath
       })
       .select()
-    if (insertError) {
-      file.onError()
-      throw `数据库插入失败: ${file.file.name}, ${insertError}`
-    }
+    if (insertError) throw `数据库插入失败: ${file.file.name}, ${insertError}`
     fileListTable.value.datas.push(...insertData)
-    file.onFinish()
-    return `上传成功: ${fileName}`
+    return insertData
   }
 }
 
@@ -80,6 +117,7 @@ export const deleteUserFile = async (file) => {
 }
 
 export const openInScratch = async (file) => {
+  loading.value.missionCount++
   const {
     data: { session }
   } = await supabase.auth.getSession()
