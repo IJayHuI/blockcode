@@ -20,5 +20,5 @@ export const getProfile = async () => {
   } = await supabase.auth.getSession()
   data.user = user
   if (error) throw supabaseErrorMap[error.message] || error.message
-  localStorage.setItem('sb-profile', JSON.stringify(data))
+  localStorage.setItem('bc-profile', JSON.stringify(data))
 }
