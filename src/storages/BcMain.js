@@ -1,4 +1,4 @@
-import { ref, h, computed } from 'vue'
+import { ref, h } from 'vue'
 import { RouterLink } from 'vue-router'
 
 // 菜单
@@ -27,12 +27,9 @@ export const fullMenuOptions = ref([
 
 // 文件列表列
 export const fileListTable = ref({
-  columns: [
-    {
-      title: '作品名'
-    }
-  ],
-  datas: []
+  datas: [],
+  loadingStatus: true,
+  needGetData: true
 })
 
 export const home = ref({

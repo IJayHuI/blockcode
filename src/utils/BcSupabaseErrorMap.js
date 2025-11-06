@@ -5,5 +5,6 @@ export default {
   'Invalid token': '令牌无效或已过期',
   'Invalid API key': 'API密钥错误',
   'Network error': '网络错误，请稍后重试',
-  'User is banned': '用户已被封禁'
+  'User is banned': '用户已被封禁',
+  'undefined': '未定义'
 }
