@@ -1,32 +1,26 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import { supabase } from '@/main'
+import routes from '@/storages/routes'
+import { getProfile } from '@/utils/BcMain'
 
 // 创建路由
 const router = createRouter({
   history: createWebHistory(),
-  routes: [
-    {
-      path: '/',
-      component: () => import('@/views/mains/BcMain.vue'),
-      redirect: '/home',
-      children: [
-        { path: '/home', component: () => import('@/views/mains/BcHome.vue') },
-        { path: '/file', component: () => import('@/views/mains/BcFile.vue') },
-        { path: '/class', component: () => import('@/views/mains/BcClass.vue') },
-        { path: '/profile', component: () => import('@/views/mains/BcProfile.vue') }
-      ]
-    },
-    { path: '/login', component: () => import('@/views/BcLogin.vue') }
-  ]
+  routes: routes
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from, next) => {
   const {
     data: { session }
   } = await supabase.auth.getSession()
-
   // 未登录且目标路由不是登录页，重定向到登录页
   if (to.path !== '/login' && !session?.user) return '/login'
+  const profile = getProfile()
+  if (to.meta.roles && !to.meta.roles.includes(profile.role)) {
+    // 根据角色重定向
+    if (profile.role === 'student') next('/file')
+    else next('/home')
+  } else next()
 })
 
 export default router
