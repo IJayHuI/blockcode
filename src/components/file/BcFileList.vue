@@ -30,7 +30,7 @@
       key: 'thumbnail',
       align: 'center',
       render(row) {
-        if (row.thumbnail) return h('img', { src: row.thumbnail, width: '200', height: '150', class: 'rounded-sm' })
+        if (row.thumbnail) return h('img', { src: row.thumbnail, width: '200', height: '150', class: 'rounded-lg' })
         return h('p', { class: 'w-50' }, '上传的文件暂无缩略图，点击在 Scratch 中打开，然后点击保存到 BlocCode 。')
       }
     },
