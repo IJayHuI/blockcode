@@ -13,6 +13,15 @@ export const signout = async () => {
   }
 }
 
+export const changePassword = async () => {
+  if (!profile.value.profileForm.newPassword) return
+  const { data, error } = await supabase.auth.updateUser({
+    password: profile.value.profileForm.newPassword
+  })
+  if (error) throw error.message
+  profile.value.profileForm.newPassword = null
+}
+
 export const getProfile = () => {
   return JSON.parse(localStorage.getItem('bc-profile'))
 }
@@ -146,7 +155,15 @@ export const getProfileForm = async () => {
 }
 
 export const updateProfile = async () => {
-  return true
+  let profileLocal = getProfile()
+  if (profileLocal.nick_name === profile.value.profileForm.nickName) return
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ nick_name: profile.value.profileForm.nickName })
+    .eq('id', profileLocal.id)
+  if (error) throw error.message
+  profileLocal.nick_name = profile.value.profileForm.nickName
+  localStorage.setItem('bc-profile', JSON.stringify(profileLocal))
 }
 
 export const getClasses = async () => {

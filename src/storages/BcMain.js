@@ -54,7 +54,8 @@ export const classes = ref({
 export const profile = ref({
   profileForm: {
     username: null,
-    nickName: null
+    nickName: null,
+    newPassword: null
   },
   modifyMode: false,
   role: null,
