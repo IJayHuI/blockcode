@@ -11,13 +11,13 @@ export const login = async () => {
   return data
 }
 
-export const getProfile = async () => {
-  const { data, error } = await supabase.from('profiles').select(`*,class_members(classes(*))`).maybeSingle()
-  const {
-    data: {
-      session: { user }
-    }
-  } = await supabase.auth.getSession()
+export const getProfileFromSupabase = async () => {
+    const {
+      data: {
+        session: { user }
+      }
+    } = await supabase.auth.getSession()
+  const { data, error } = await supabase.from('profiles').select(`*,classes:class_members(class_id(*))`).eq('id', user.id).maybeSingle()
   data.user = user
   if (error) throw supabaseErrorMap[error.message] || error.message
   localStorage.setItem('bc-profile', JSON.stringify(data))

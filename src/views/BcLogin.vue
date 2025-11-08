@@ -3,7 +3,7 @@
   import { NCarousel, NCarouselItem, useNotification } from 'naive-ui'
   import { ref } from 'vue'
   import { loginForm } from '@/storages/BcLogin'
-  import { login, getProfile } from '@/utils/BcLogin'
+  import { login, getProfileFromSupabase } from '@/utils/BcLogin'
   import { loading } from '@/main'
   import router from '@/routes'
 
@@ -13,7 +13,7 @@
     loading.value.missionCount++
     try {
       await login()
-      await getProfile()
+      await getProfileFromSupabase()
       router.push('/home')
     } catch (error) {
       notification.error({
