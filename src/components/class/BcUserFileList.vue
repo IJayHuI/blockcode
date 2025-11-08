@@ -9,7 +9,6 @@
 
   onMounted(async () => {
     await getStudentFiles(props.userId)
-    console.log(classes)
   })
   const columns = ref([
     {

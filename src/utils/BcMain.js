@@ -71,23 +71,25 @@ export const fileUpload = async (file, type = 'upload') => {
     fileListTable.value.datas.push(insertData[0])
     return insertData[0]
   }
-  if (file.file.name.endsWith('.sb3') && type === 'upload') {
+  if (type === 'upload') {
     const fileName = file.file.name.substring(0, file.file.name.lastIndexOf('.'))
-    const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file.file.file)
-    if (uploadError) {
-      throw `上传失败: ${fileName}, ${uploadError}`
-    }
-    const { data: insertData, error: insertError } = await supabase
-      .from('files')
-      .insert({
-        user_id: user.id, // ⚠️ 必须是 auth 用户 id
-        file_name: fileName,
-        file_path: filePath
-      })
-      .select()
-    if (insertError) throw `数据库插入失败: ${file.file.name}, ${insertError}`
-    fileListTable.value.datas.push(...insertData)
-    return insertData
+    if (file.file.name.endsWith('.sb3')) {
+      const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file.file.file)
+      if (uploadError) {
+        throw `上传失败: ${fileName}，${uploadError}`
+      }
+      const { data: insertData, error: insertError } = await supabase
+        .from('files')
+        .insert({
+          user_id: user.id, // ⚠️ 必须是 auth 用户 id
+          file_name: fileName,
+          file_path: filePath
+        })
+        .select()
+      if (insertError) throw `数据库插入失败: ${file.file.name}, ${insertError}`
+      fileListTable.value.datas.push(...insertData)
+      return insertData
+    } else throw `上传失败：${fileName}，格式不符合`
   }
 }
 
@@ -151,7 +153,6 @@ export const getProfileForm = async () => {
     nickName: data.nick_name
   }
   profile.value.role = data.role
-  console.log(data)
 }
 
 export const updateProfile = async () => {
