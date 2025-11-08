@@ -13,7 +13,6 @@ const router = createRouter({
         { path: '/home', component: () => import('@/views/mains/BcHome.vue') },
         { path: '/file', component: () => import('@/views/mains/BcFile.vue') },
         { path: '/class', component: () => import('@/views/mains/BcClass.vue') },
-        { path: '/classes', component: () => import('@/views/mains/BcClasses.vue') },
         { path: '/profile', component: () => import('@/views/mains/BcProfile.vue') }
       ]
     },
@@ -25,7 +24,8 @@ router.beforeEach(async (to, from) => {
   const {
     data: { session }
   } = await supabase.auth.getSession()
-  // 如果未登录且目标路由不是登录页，则重定向到登录页
+
+  // 未登录且目标路由不是登录页，重定向到登录页
   if (to.path !== '/login' && !session?.user) return '/login'
 })
 

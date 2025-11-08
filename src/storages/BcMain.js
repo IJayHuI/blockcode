@@ -12,12 +12,8 @@ export const fullMenuOptions = ref([
     key: 'file'
   },
   {
-    label: () => h(RouterLink, { to: '/class' }, { default: () => '我的班级' }),
+    label: () => h(RouterLink, { to: '/class' }, { default: () => '我的所有班级' }),
     key: 'class'
-  },
-  {
-    label: () => h(RouterLink, { to: '/classes' }, { default: () => '我的所有班级' }),
-    key: 'classes'
   },
   {
     label: () => h(RouterLink, { to: '/profile' }, { default: () => '个人资料' }),
@@ -33,7 +29,7 @@ export const fileListTable = ref({
 })
 
 export const home = ref({
-  welcomeMessage: '你好，用户'
+  pageTitle: '你好，用户'
 })
 
 export const theme = {
@@ -41,3 +37,26 @@ export const theme = {
     borderRadius: '8px'
   }
 }
+
+export const file = ref({
+  pageTitle: ''
+})
+
+// 使用复数形式代替 class
+export const classes = ref({
+  pageTitle: '我的所有班级',
+  classes: null,
+  classMembers: null,
+  classMemberFileList: [],
+  getClassMemberFileLoadingStatus: true
+})
+
+export const profile = ref({
+  profileForm: {
+    username: null,
+    nickName: null
+  },
+  modifyMode: false,
+  role: null,
+  pageTitle: '个人资料'
+})

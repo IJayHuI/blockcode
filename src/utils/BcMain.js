@@ -1,6 +1,7 @@
 import { supabase, isDev, loading } from '@/main'
 import { v4 as uuidv4 } from 'uuid'
-import { fileListTable, home } from '@/storages/BcMain'
+import { fileListTable, home, profile } from '@/storages/BcMain'
+import { classes } from '@/storages/BcMain'
 
 export const signout = async () => {
   const { error } = await supabase.auth.signOut()
@@ -10,6 +11,10 @@ export const signout = async () => {
     loadingStatus: true,
     needGetData: true
   }
+}
+
+export const getProfile = () => {
+  return JSON.parse(localStorage.getItem('bc-profile'))
 }
 
 export const fileUpload = async (file, type = 'upload') => {
@@ -79,8 +84,9 @@ export const fileUpload = async (file, type = 'upload') => {
 
 export const getUserFiles = async () => {
   if (!fileListTable.value.needGetData) return
-  const { data, error } = await supabase.from('files').select('*')
-  if (error) throw error
+  const profile = getProfile()
+  const { data, error } = await supabase.from('files').select('*').eq('user_id', profile.id)
+  if (error) throw error.message
   fileListTable.value.datas = await Promise.all(
     data.map(async (file) => {
       let thumbnailUrl = null
@@ -124,7 +130,64 @@ export const openInScratch = async (file) => {
   window.location.href = `${isDev ? 'http://localhost:8601' : 'https://scratch.blockcode.com.cn'}/?token=${session.access_token}&refresh-token=${session.refresh_token}&project-id=${file.id}`
 }
 
-export const setWelcomeMessage = async () => {
-  const data = JSON.parse(localStorage.getItem('bc-profile'))
-  home.value.welcomeMessage = `你好，${data.nick_name || data.user.email || '用户'}`
+export const setHomePageTitle = () => {
+  const data = getProfile()
+  home.value.pageTitle = `你好，${data.nick_name || '用户'}`
+}
+
+export const getProfileForm = async () => {
+  const data = getProfile()
+  profile.value.profileForm = {
+    username: data.user.email.substring(0, data.user.email.lastIndexOf('@')),
+    nickName: data.nick_name
+  }
+  profile.value.role = data.role
+  console.log(data)
+}
+
+export const updateProfile = async () => {
+  return true
+}
+
+export const getClasses = async () => {
+  const profile = getProfile()
+  const classIds = profile.classes.map((classItem) => classItem.class_id.id)
+  const { data, error } = await supabase.from('classes').select('*').in('id', classIds)
+  if (error) throw error.message
+  classes.value.classes = data
+}
+
+export const getClassMembers = async () => {
+  const profile = getProfile()
+  const classIds = profile.classes.map((classItem) => classItem.class_id.id)
+  const { data, error } = await supabase.from('class_members').select('class:class_id(*), user:profile_id(*)').in('class_id', classIds)
+  if (error) throw error.message
+  let formated = {}
+  data.forEach((member) => {
+    member.user.key = member.user.id
+    const classId = member.class.id
+    if (!formated[classId]) formated[classId] = []
+    formated[classId].push(member.user)
+  })
+  classes.value.classMembers = formated
+}
+
+export const getStudentFiles = async (id) => {
+  classes.value.getClassMemberFileLoadingStatus = true
+  const { data, error } = await supabase.from('files').select('*').eq('user_id', id)
+  if (error) throw error.message
+  classes.value.classMemberFileList[id] = await Promise.all(
+    data.map(async (file) => {
+      let thumbnailUrl = null
+      if (file.thumbnail_path) {
+        const { data } = await supabase.storage.from('files').createSignedUrl(file.thumbnail_path, 60 * 60)
+        thumbnailUrl = data?.signedUrl ?? null
+      }
+      return {
+        ...file,
+        thumbnail: thumbnailUrl
+      }
+    })
+  )
+  classes.value.getClassMemberFileLoadingStatus = false
 }
