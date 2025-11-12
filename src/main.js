@@ -4,8 +4,8 @@ import App from '@/App.vue'
 
 import router from '@/routes.js'
 
-import { create, NButton, NSwitch, NSpace, NInput, NIcon, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NLayoutSider, NCard, NForm, NFormItem, NDatePicker, NSelect, NDataTable } from 'naive-ui'
-const naive = create({ components: [NButton, NSwitch, NSpace, NInput, NIcon, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NLayoutSider, NCard, NForm, NFormItem, NDatePicker, NSelect, NDataTable] })
+import { create, NUpload, NUploadDragger, NButton, NRadio, NSwitch, NSpace, NInput, NIcon, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NLayoutSider, NCard, NForm, NFormItem, NDatePicker, NSelect, NDataTable } from 'naive-ui'
+const naive = create({ components: [NUpload, NUploadDragger, NButton, NRadio, NSwitch, NSpace, NInput, NIcon, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NLayoutSider, NCard, NForm, NFormItem, NDatePicker, NSelect, NDataTable] })
 
 // Supabase 后端
 import { createClient } from '@supabase/supabase-js'
@@ -16,7 +16,8 @@ export const loading = ref({
   status: computed(() => {
     return loading.value.missionCount !== 0
   }),
-  missionCount: 0
+  missionCount: 0,
+  text: null
 })
 
 // 环境
