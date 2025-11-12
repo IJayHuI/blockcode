@@ -2,7 +2,7 @@
   import { AddRound, UploadFileRound } from '@vicons/material'
   import { supabase } from '@/main'
   import { ref, onMounted } from 'vue'
-  import { NUpload, NSplit, NUploadDragger, useNotification } from 'naive-ui'
+  import { NSplit, useNotification } from 'naive-ui'
   import { fileUpload, openInScratch } from '@/utils/BcMain'
 
   const notification = useNotification()
