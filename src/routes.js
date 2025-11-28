@@ -9,18 +9,19 @@ const router = createRouter({
   routes: routes
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const {
     data: { session }
   } = await supabase.auth.getSession()
-  // 未登录且目标路由不是登录页，重定向到登录页
+  // 未登录
   if (to.path !== '/login' && !session?.user) return '/login'
   const profile = getProfile()
+  // 权限不足
   if (to.meta.roles && !to.meta.roles.includes(profile.role)) {
-    // 根据角色重定向
-    if (profile.role === 'student') next('/file')
-    else next('/home')
-  } else next()
+    if (profile.role === 'student') return '/file'
+    else return '/home'
+  }
+  return true // 正常放行
 })
 
 export default router
