@@ -1,16 +1,10 @@
 import { supabase, isDev, loading } from '@/main'
 import { v4 as uuidv4 } from 'uuid'
-import { fileListTable, home, profile } from '@/storages/BcMain'
-import { classes } from '@/storages/BcMain'
+import { home, profile, createUserPage } from '@/storages/BcMain'
 
 export const signout = async () => {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
-  fileListTable.value = {
-    datas: [],
-    loadingStatus: true,
-    needGetData: true
-  }
 }
 
 export const changePassword = async () => {
@@ -62,14 +56,9 @@ export const fileUpload = async (file, type = 'upload') => {
         thumbnail_path: thumbnailPath
       })
       .select()
-    if (insertError) {
-      file.onError()
-      throw `数据库插入失败: ${fileName}, ${insertError}`
-    }
-    const { data } = await supabase.storage.from('files').createSignedUrl(insertData[0].thumbnail_path, 60 * 60)
-    insertData[0].thumbnail = data?.signedUrl ?? null
-    fileListTable.value.datas.push(insertData[0])
-    return insertData[0]
+      .single()
+    if (insertError) throw `数据库插入失败: ${fileName}, ${insertError}`
+    return insertData
   }
   if (type === 'upload') {
     const fileName = file.file.name.substring(0, file.file.name.lastIndexOf('.'))
@@ -86,19 +75,17 @@ export const fileUpload = async (file, type = 'upload') => {
           file_path: filePath
         })
         .select()
+        .single()
       if (insertError) throw `数据库插入失败: ${file.file.name}, ${insertError}`
-      fileListTable.value.datas.push(...insertData)
       return insertData
     } else throw `上传失败：${fileName}，格式不符合`
   }
 }
 
-export const getUserFiles = async () => {
-  if (!fileListTable.value.needGetData) return
-  const profile = getProfile()
-  const { data, error } = await supabase.from('files').select('*').eq('user_id', profile.id)
+export const getUserFiles = async (userId) => {
+  const { data, error } = await supabase.from('files').select('*').eq('user_id', userId)
   if (error) throw error.message
-  fileListTable.value.datas = await Promise.all(
+  return await Promise.all(
     data.map(async (file) => {
       let thumbnailUrl = null
       if (file.thumbnail_path) {
@@ -111,8 +98,6 @@ export const getUserFiles = async () => {
       }
     })
   )
-  fileListTable.value.needGetData = false
-  fileListTable.value.loadingStatus = false
 }
 
 export const deleteUserFile = async (file) => {
@@ -129,16 +114,15 @@ export const deleteUserFile = async (file) => {
   if (errorFile) deleteStatus.file = errorFile
   const { error: errorRecord } = await supabase.from('files').delete().eq('id', file.id)
   if (errorRecord) deleteStatus.record = errorRecord
-  if (deleteStatus.thumbnail && deleteStatus.file && deleteStatus.thumbnail) fileListTable.value.datas.splice(fileListTable.value.datas.indexOf(file), 1)
   return deleteStatus
 }
 
-export const openInScratch = async (file) => {
+export const openInScratch = async (fileId) => {
   loading.value.missionCount++
   const {
     data: { session }
   } = await supabase.auth.getSession()
-  window.location.href = `${isDev ? 'http://localhost:8601' : 'https://scratch.blockcode.com.cn'}/?token=${session.access_token}&refresh-token=${session.refresh_token}&project-id=${file.id}`
+  window.location.href = `${isDev ? 'http://localhost:8601' : 'https://scratch.blockcode.com.cn'}/#${fileId}?token=${session.access_token}&refresh-token=${session.refresh_token}`
 }
 
 export const setHomePageTitle = () => {
@@ -158,10 +142,7 @@ export const getProfileForm = async () => {
 export const updateProfile = async () => {
   let profileLocal = getProfile()
   if (profileLocal.nick_name === profile.value.profileForm.nickName) return
-  const { data, error } = await supabase
-    .from('profiles')
-    .update({ nick_name: profile.value.profileForm.nickName })
-    .eq('id', profileLocal.id)
+  const { data, error } = await supabase.from('profiles').update({ nick_name: profile.value.profileForm.nickName }).eq('id', profileLocal.id)
   if (error) throw error.message
   profileLocal.nick_name = profile.value.profileForm.nickName
   localStorage.setItem('bc-profile', JSON.stringify(profileLocal))
@@ -172,7 +153,7 @@ export const getClasses = async () => {
   const classIds = profile.classes.map((classItem) => classItem.class_id.id)
   const { data, error } = await supabase.from('classes').select('*').in('id', classIds)
   if (error) throw error.message
-  classes.value.classes = data
+  return data
 }
 
 export const getClassMembers = async () => {
@@ -180,34 +161,7 @@ export const getClassMembers = async () => {
   const classIds = profile.classes.map((classItem) => classItem.class_id.id)
   const { data, error } = await supabase.from('class_members').select('class:class_id(*), user:profile_id(*)').in('class_id', classIds)
   if (error) throw error.message
-  let formated = {}
-  data.forEach((member) => {
-    member.user.key = member.user.id
-    const classId = member.class.id
-    if (!formated[classId]) formated[classId] = []
-    formated[classId].push(member.user)
-  })
-  classes.value.classMembers = formated
-}
-
-export const getStudentFiles = async (id) => {
-  classes.value.getClassMemberFileLoadingStatus = true
-  const { data, error } = await supabase.from('files').select('*').eq('user_id', id)
-  if (error) throw error.message
-  classes.value.classMemberFileList[id] = await Promise.all(
-    data.map(async (file) => {
-      let thumbnailUrl = null
-      if (file.thumbnail_path) {
-        const { data } = await supabase.storage.from('files').createSignedUrl(file.thumbnail_path, 60 * 60)
-        thumbnailUrl = data?.signedUrl ?? null
-      }
-      return {
-        ...file,
-        thumbnail: thumbnailUrl
-      }
-    })
-  )
-  classes.value.getClassMemberFileLoadingStatus = false
+  return data
 }
 
 export const createUser = async () => {

@@ -1,5 +1,4 @@
-import { ref, h } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
 
 // 菜单
 export const menuOptions = ref([])
@@ -13,19 +12,6 @@ export const theme = {
     borderRadius: '8px'
   }
 }
-
-export const file = ref({
-  pageTitle: ''
-})
-
-// 使用复数形式代替 class
-export const classes = ref({
-  pageTitle: '我的所有班级',
-  classes: null,
-  classMembers: null,
-  classMemberFileList: [],
-  getClassMemberFileLoadingStatus: true
-})
 
 export const profile = ref({
   profileForm: {
