@@ -209,3 +209,24 @@ export const getStudentFiles = async (id) => {
   )
   classes.value.getClassMemberFileLoadingStatus = false
 }
+
+export const createUser = async () => {
+  const { data, error } = await supabase.functions.invoke('create-user', {
+    body: JSON.stringify({
+      users: createUserPage.value.batchMode
+        ? createUserPage.value.createUserForm.userList
+        : [
+            {
+              username: createUserPage.value.createUserForm.username,
+              nickName: createUserPage.value.createUserForm.nickName
+            }
+          ],
+      password: createUserPage.value.createUserForm.password,
+      validity: createUserPage.value.createUserForm.validity,
+      role: createUserPage.value.createUserForm.role
+    })
+  })
+  if (error) throw error
+  console.log(data)
+  return data
+}

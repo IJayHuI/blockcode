@@ -37,3 +37,17 @@ export const profile = ref({
   role: null,
   pageTitle: '个人资料'
 })
+
+export const createUserPage = ref({
+  pageTitle: '创建用户',
+  batchMode: false,
+  createUserForm: {
+    role: 'student',
+    username: null,
+    password: null,
+    classId: null,
+    nickName: null,
+    validity: null,
+    userList: []
+  }
+})
