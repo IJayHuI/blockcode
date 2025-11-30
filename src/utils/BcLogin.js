@@ -1,5 +1,4 @@
 import { supabase } from '@/main'
-import { loginForm } from '@/storages/BcLogin'
 import { menuOptions } from '@/storages/BcMain'
 import supabaseErrorMap from '@/utils/BcSupabaseErrorMap'
 import { RouterLink } from 'vue-router'
@@ -7,13 +6,13 @@ import routes from '@/storages/routes'
 import { getProfile } from '@/utils/BcMain'
 import { h } from 'vue'
 
-export const login = async () => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: `${loginForm.value.phoneNumber}@blockcode.com.cn`,
-    password: loginForm.value.password
+export const login = async (data) => {
+  const { data: resultData, error } = await supabase.auth.signInWithPassword({
+    email: `${data.phoneNumber}@blockcode.com.cn`,
+    password: data.password
   })
   if (error) throw supabaseErrorMap[error.message] || error.message
-  return data
+  return resultData
 }
 
 export const getProfileFromSupabase = async () => {
