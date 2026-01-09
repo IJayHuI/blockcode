@@ -1,9 +1,10 @@
 <script setup>
   import { darkTheme, zhCN, dateZhCN, NLoadingBarProvider, NSpin, NDialogProvider, NConfigProvider, NNotificationProvider, useOsTheme } from 'naive-ui'
   import { computed } from 'vue'
-  import { loading } from '@/main'
-  import { theme } from '@/storages/BcMain.js'
+  import { useLoadingStore } from '@/stores/loading'
+  import theme from '@/theme/naive-theme'
 
+  const loading = useLoadingStore()
   const osTheme = useOsTheme()
   const currentTheme = computed(() => (osTheme.value === 'dark' ? darkTheme : null))
 </script>

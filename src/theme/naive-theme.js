@@ -1,0 +1,11 @@
+export default {
+  common: {
+    borderRadius: '8px'
+  },
+  LoadingBar: {
+    height: '4px'
+  },
+  Avatar: {
+    fontSize: '20px'
+  }
+}
