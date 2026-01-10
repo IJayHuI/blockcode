@@ -8,7 +8,7 @@
   })
 </script>
 <template>
-  <span>&copy;2025 BlockCode 版权所有</span>
-  <span><a class="hover:underline" target="_blank" href="https://beian.miit.gov.cn">浙ICP备2024134699号</a></span>
-  <span>Version: {{ props.version }}</span>
+  <p>&copy;2025-2026 BlockCode 版权所有</p>
+  <p><a class="hover:underline" target="_blank" href="https://beian.miit.gov.cn">浙ICP备2024134699号</a></p>
+  <p>Version: {{ props.version }}</p>
 </template>
