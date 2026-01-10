@@ -53,6 +53,9 @@
   const setAddClassMemberDrawer = (state) => {
     classes.setAddClassMemberDrawerState(state)
   }
+  const setMemberFileListDrawer = (state) => {
+    classes.setMemberFileListDrawerState(state)
+  }
   const addClassMember = async (memberList) => {
     const { data, error } = await supabase
       .from('class_members')
@@ -68,6 +71,26 @@
     if (error) throw error
     const profiles = data.map((item) => item.profiles)
     classes.setMemberList([...profiles, ...classes.memberList])
+  }
+  const getMemberFileList = async (userId) => {
+    const { data, error } = await supabase.from('files').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+    if (error) throw error
+
+    const formattedData = await Promise.all(
+      data.map(async (file) => {
+        let thumbnailUrl = null
+        if (file.thumbnail_path) {
+          const { data } = await supabase.storage.from('files').createSignedUrl(file.thumbnail_path, 60 * 60)
+          thumbnailUrl = data?.signedUrl ?? null
+        }
+        return {
+          ...file,
+          thumbnail: thumbnailUrl
+        }
+      })
+    )
+
+    classes.setMemberFileList(formattedData)
   }
 </script>
 <template>
@@ -86,7 +109,11 @@
     :delete-class-member="deleteClassMember"
     :set-add-class-member-drawer="setAddClassMemberDrawer"
     :add-class-member-drawer-state="classes.addClassMemberDrawerState"
+    :member-file-list-drawer-state="classes.memberFileListDrawerState"
     :get-available-class-members="getAvailableClassMembers"
     :available-member-list="classes.availableMemberList"
-    :add-class-member="addClassMember" />
+    :add-class-member="addClassMember"
+    :set-member-file-list-drawer="setMemberFileListDrawer"
+    :member-file-list="classes.memberFileList"
+    :get-member-file-list="getMemberFileList" />
 </template>

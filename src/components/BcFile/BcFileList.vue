@@ -9,6 +9,7 @@
     fileList: { type: Array, required: false, default: [] },
     showScratchButton: { type: Boolean, required: false, default: false },
     showDeleteButton: { type: Boolean, required: false, default: false },
+    showRefreshButton: { type: Boolean, required: false, default: false },
     openInScratch: { type: Function, required: false, default: () => {} },
     deleteFile: { type: Function, required: false, default: () => {} },
     getFileList: { type: Function, required: false, default: () => {} }
@@ -61,11 +62,11 @@
   onMounted(async () => await handleGetFileList())
 </script>
 <template>
-  <p v-if="props.fileList.length === 0" class="text-2xl font-bold">没有文件</p>
-  <div v-else class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2">
     <div class="flex justify-between items-center">
-      <p class="text-2xl font-bold">文件列表</p>
-      <n-button @click="handleGetFileList" secondary type="success">
+      <p v-if="props.fileList.length === 0" class="text-2xl font-bold">没有文件</p>
+      <p v-else class="text-2xl font-bold">文件列表</p>
+      <n-button @click="handleGetFileList" secondary type="success" v-if="props.showRefreshButton">
         <template #icon>
           <n-icon>
             <RefreshRound />

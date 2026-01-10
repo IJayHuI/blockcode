@@ -13,6 +13,7 @@
   const env = useEnvStore()
   const showScratchButton = true
   const showDeleteButton = true
+  const showRefreshButton = true
 
   const openInScratch = async (fileId) => {
     const {
@@ -120,6 +121,7 @@
   <bc-file
     :show-scratch-button="showScratchButton"
     :show-delete-button="showDeleteButton"
+    :show-refresh-button="showRefreshButton"
     :get-file-list="getFileList"
     :file-list="file.fileList"
     :page-title="pageTitle"

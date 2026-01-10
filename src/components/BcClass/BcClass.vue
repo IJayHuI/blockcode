@@ -14,16 +14,20 @@
     classList: { type: Array, required: false, default: [] },
     memberList: { type: Array, required: false, default: [] },
     availableMemberList: { type: Array, required: false, default: [] },
+    memberFileList: { type: Array, required: false, default: [] },
     getClassList: { type: Function, required: false, default: () => {} },
     getClassInfo: { type: Function, required: false, default: () => {} },
     getAvailableClassMembers: { type: Function, required: false, default: () => {} },
+    getMemberFileList: { type: Function, required: false, default: () => {} },
     setDrawerState: { type: Function, required: false, default: () => {} },
     setAddClassMemberDrawer: { type: Function, required: false, default: () => {} },
+    setMemberFileListDrawer: { type: Function, required: false, default: () => {} },
     setDrawerContent: { type: Function, required: false, default: () => {} },
     deleteClassMember: { type: Function, required: false, default: () => {} },
     addClassMember: { type: Function, required: false, default: () => {} },
     drawerState: { type: Boolean, required: false, default: false },
-    addClassMemberDrawerState: { type: Boolean, required: false, default: false }
+    addClassMemberDrawerState: { type: Boolean, required: false, default: false },
+    memberFileListDrawerState: { type: Boolean, required: false, default: false }
   })
   const notification = useNotification()
   const loadingBar = useLoadingBar()
@@ -94,9 +98,13 @@
       :member-list="props.memberList"
       :delete-class-member="props.deleteClassMember"
       :set-add-class-member-drawer="props.setAddClassMemberDrawer"
+      :set-member-file-list-drawer="props.setMemberFileListDrawer"
       :add-class-member-drawer-state="props.addClassMemberDrawerState"
       :get-available-class-members="props.getAvailableClassMembers"
+      :get-member-file-list="props.getMemberFileList"
       :available-member-list="props.availableMemberList"
-      :add-class-member="props.addClassMember" />
+      :add-class-member="props.addClassMember"
+      :member-file-list-drawer-state="props.memberFileListDrawerState"
+      :member-file-list="props.memberFileList" />
   </n-drawer>
 </template>

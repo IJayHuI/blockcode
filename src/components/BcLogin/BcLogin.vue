@@ -51,7 +51,7 @@
         </n-carousel>
       </div>
     </n-layout>
-    <n-layout-sider width="30%" content-class="flex flex-col items-center">
+    <n-layout-sider width="35%" content-class="flex flex-col items-center">
       <div class="w-9/10 flex-1 flex flex-col justify-center gap-6">
         <p class="text-3xl font-bold">登录</p>
         <n-form label-placement="left" size="large" @keyup.enter="handleLogin">
@@ -73,7 +73,7 @@
           </n-form-item>
         </n-form>
       </div>
-      <n-layout-footer><bc-beian /></n-layout-footer>
+      <n-layout-footer class="flex gap-1"><bc-beian /></n-layout-footer>
     </n-layout-sider>
   </n-layout>
 </template>

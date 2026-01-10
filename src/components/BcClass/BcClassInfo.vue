@@ -1,18 +1,23 @@
 <script setup>
   import { ref, onMounted, h } from 'vue'
 
-  import { NDrawer, NDrawerContent, useNotification, useLoadingBar, NButton, NAvatar } from 'naive-ui'
+  import BcFileList from '@/components/BcFile/BcFileList.vue'
+  import { NDrawer, NDrawerContent, useNotification, useLoadingBar, NButton, NAvatar, NSpace } from 'naive-ui'
 
   const props = defineProps({
     title: { type: String, required: false, default: null },
     getClassInfo: { type: Function, required: false, default: () => {} },
     getAvailableClassMembers: { type: Function, required: false, default: () => {} },
+    getMemberFileList: { type: Function, required: false, default: () => {} },
     addClassMember: { type: Function, required: false, default: () => {} },
     deleteClassMember: { type: Function, required: false, default: () => {} },
     setAddClassMemberDrawer: { type: Function, required: false, default: () => {} },
+    setMemberFileListDrawer: { type: Function, required: false, default: () => {} },
     memberList: { type: Array, required: false, default: [] },
     availableMemberList: { type: Array, required: false, default: [] },
-    addClassMemberDrawerState: { type: Boolean, required: false, default: false }
+    memberFileList: { type: Array, required: false, default: [] },
+    addClassMemberDrawerState: { type: Boolean, required: false, default: false },
+    memberFileListDrawerState: { type: Boolean, required: false, default: false }
   })
   const loadingBar = useLoadingBar()
   const notification = useNotification()
@@ -40,13 +45,42 @@
       align: 'center',
       render(row) {
         return h(
-          NButton,
+          NSpace,
           {
-            secondary: true,
-            type: 'error',
-            onClick: async () => handleDeleteClassMember(row)
+            justify: 'center'
           },
-          { default: () => '移除' }
+          {
+            default: () => {
+              const buttons = [
+                h(
+                  NButton,
+                  {
+                    secondary: true,
+                    type: 'error',
+                    onClick: async () => handleDeleteClassMember(row)
+                  },
+                  { default: () => '移除' }
+                )
+              ]
+
+              // ⭐ 只有 student 才显示第二个按钮
+              if (row.role === 'student') {
+                buttons.push(
+                  h(
+                    NButton,
+                    {
+                      secondary: true,
+                      type: 'success',
+                      onClick: async () => handleOpenMemberFileListDrawer(row)
+                    },
+                    { default: () => '查看文件' }
+                  )
+                )
+              }
+
+              return buttons
+            }
+          }
         )
       }
     }
@@ -130,6 +164,26 @@
   const handleCloseAddClassMemberDrawer = () => {
     props.setAddClassMemberDrawer(false)
   }
+  const handleOpenMemberFileListDrawer = async (row) => {
+    try {
+      loadingBar.start()
+      props.setMemberFileListDrawer(true)
+      await props.getMemberFileList(row.id)
+    } catch (error) {
+      console.error(error)
+      loadingBar.error()
+      notification.error({
+        title: '获取文件列表失败',
+        content: error.message,
+        duration: 6000
+      })
+    } finally {
+      loadingBar.finish()
+    }
+  }
+  const handleCloseMemberFileListDrawer = () => {
+    props.setMemberFileListDrawer(false)
+  }
   const handleClickConfirm = async () => {
     try {
       loadingBar.start()
@@ -176,6 +230,11 @@
             <n-button secondary @click="handleClickConfirm" type="success">确定</n-button>
           </n-space>
         </template>
+      </n-drawer-content>
+    </n-drawer>
+    <n-drawer @update:show="handleCloseMemberFileListDrawer" :show="props.memberFileListDrawerState" width="40%">
+      <n-drawer-content closable :title="`的文件`">
+        <bc-file-list :show-scratch-button="true" :file-list="props.memberFileList" />
       </n-drawer-content>
     </n-drawer>
   </n-drawer-content>
