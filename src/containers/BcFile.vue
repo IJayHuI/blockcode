@@ -125,7 +125,6 @@
     :get-file-list="getFileList"
     :file-list="file.fileList"
     :page-title="pageTitle"
-    :open-in-scratch="openInScratch"
     :delete-file="deleteFile"
     :create-new-file="createNewFile"
     :upload-file="uploadFile" />

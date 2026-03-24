@@ -1,7 +1,7 @@
 <script setup>
   import { ref, onMounted, h } from 'vue'
 
-  import BcFileList from '@/components/BcFile/BcFileList.vue'
+  import BcShowStudentFile from '@/containers/BcShowStudentFile.vue'
   import { NDrawer, NDrawerContent, useNotification, useLoadingBar, NButton, NAvatar, NSpace } from 'naive-ui'
 
   const props = defineProps({
@@ -168,7 +168,7 @@
     try {
       loadingBar.start()
       props.setMemberFileListDrawer(true)
-      await props.getMemberFileList(row.id)
+      await props.getMemberFileList(row)
     } catch (error) {
       console.error(error)
       loadingBar.error()
@@ -180,9 +180,6 @@
     } finally {
       loadingBar.finish()
     }
-  }
-  const handleCloseMemberFileListDrawer = () => {
-    props.setMemberFileListDrawer(false)
   }
   const handleClickConfirm = async () => {
     try {
@@ -232,10 +229,6 @@
         </template>
       </n-drawer-content>
     </n-drawer>
-    <n-drawer @update:show="handleCloseMemberFileListDrawer" :show="props.memberFileListDrawerState" width="40%">
-      <n-drawer-content closable :title="`的文件`">
-        <bc-file-list :show-scratch-button="true" :file-list="props.memberFileList" />
-      </n-drawer-content>
-    </n-drawer>
   </n-drawer-content>
+  <bc-show-student-file />
 </template>

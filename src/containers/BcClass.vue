@@ -72,8 +72,8 @@
     const profiles = data.map((item) => item.profiles)
     classes.setMemberList([...profiles, ...classes.memberList])
   }
-  const getMemberFileList = async (userId) => {
-    const { data, error } = await supabase.from('files').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  const getMemberFileList = async (user) => {
+    const { data, error } = await supabase.from('files').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
     if (error) throw error
 
     const formattedData = await Promise.all(
@@ -89,7 +89,9 @@
         }
       })
     )
-
+    
+    console.log(user)
+    classes.setMemberDrawerTitleUsername(user.nick_name || user.username)
     classes.setMemberFileList(formattedData)
   }
 </script>

@@ -1,4 +1,7 @@
 <script setup>
+  import supabase from '@/lib/supabase'
+
+  import { useEnvStore } from '@/stores/env'
   import { useLoadingStore } from '@/stores/loading'
   import { onMounted } from 'vue'
 
@@ -10,18 +13,20 @@
     showScratchButton: { type: Boolean, required: false, default: false },
     showDeleteButton: { type: Boolean, required: false, default: false },
     showRefreshButton: { type: Boolean, required: false, default: false },
-    openInScratch: { type: Function, required: false, default: () => {} },
     deleteFile: { type: Function, required: false, default: () => {} },
     getFileList: { type: Function, required: false, default: () => {} }
   })
-
+  const env = useEnvStore()
   const loadingBar = useLoadingBar()
   const loading = useLoadingStore()
   const notification = useNotification()
 
   const handleOpenInScratch = async (fileId) => {
     loading.start()
-    props.openInScratch(fileId)
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+    window.location.href = `${env.isDev ? 'http://localhost:8601' : 'https://scratch.blockcode.com.cn'}/#${fileId}?token=${session.access_token}&refresh-token=${session.refresh_token}`
   }
   const handleDeleteUserFile = async (file) => {
     try {

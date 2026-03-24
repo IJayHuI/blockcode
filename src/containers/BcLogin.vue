@@ -26,7 +26,7 @@
     profile.setRole(profileData.role)
     profile.setClassIds(classData.map((item) => item.class_id))
 
-    router.push({ name: 'file' })
+    router.push('/file')
   }
 </script>
 <template>

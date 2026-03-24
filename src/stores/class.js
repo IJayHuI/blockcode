@@ -7,6 +7,7 @@ export const useClassStore = defineStore('class', () => {
   const drawerState = ref(false)
   const addClassMemberDrawerState = ref(false)
   const memberFileListDrawerState = ref(false)
+  const memberDrawerTitleUsername = ref(null)
   const drawerClassId = ref(null)
   const drawerTitle = ref(null)
   const memberList = ref([])
@@ -35,6 +36,9 @@ export const useClassStore = defineStore('class', () => {
   function setMemberFileListDrawerState(newState) {
     memberFileListDrawerState.value = newState
   }
+  function setMemberDrawerTitleUsername(newUsername) {
+    memberDrawerTitleUsername.value = newUsername
+  }
   function setDrawerClassId(newId) {
     drawerClassId.value = newId
   }
@@ -56,6 +60,7 @@ export const useClassStore = defineStore('class', () => {
     drawerState,
     addClassMemberDrawerState,
     memberFileListDrawerState,
+    memberDrawerTitleUsername,
     drawerClassId,
     drawerTitle,
     memberList,
@@ -69,6 +74,7 @@ export const useClassStore = defineStore('class', () => {
     setDrawerState,
     setAddClassMemberDrawerState,
     setMemberFileListDrawerState,
+    setMemberDrawerTitleUsername,
     setDrawerClassId,
     setDrawerTitle,
     setMemberList,
