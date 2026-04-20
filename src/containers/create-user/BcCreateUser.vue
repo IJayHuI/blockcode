@@ -3,7 +3,7 @@
 
   import { createUser } from '../../lib/profile'
 
-  import { type CreateForm, useStores } from '../../stores'
+  import { type CreateForm } from '../../stores'
 
   const handleCreateUser = async (users: CreateForm) => {
     try {
